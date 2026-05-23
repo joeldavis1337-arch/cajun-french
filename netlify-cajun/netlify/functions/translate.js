@@ -6,20 +6,17 @@ exports.handler = async (event) => {
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
-
   if (!apiKey) {
-    console.error("MISSING API KEY - ANTHROPIC_API_KEY env var not set");
     return { statusCode: 500, body: JSON.stringify({ error: { message: "API key not configured" } }) };
   }
 
-  console.log("API key present, length:", apiKey.length);
-
   try {
-    const { english } = JSON.parse(event.body);
+    const body = JSON.parse(event.body);
+    const english = body.english;
     console.log("Translating:", english);
 
     const payload = JSON.stringify({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-opus-4-5",
       max_tokens: 1000,
       system: `You are a Cajun French language expert. Translate English into authentic Louisiana Cajun French — not standard Parisian French.
 
@@ -49,14 +46,11 @@ Respond ONLY with valid JSON, no markdown:
         let data = "";
         res.on("data", chunk => data += chunk);
         res.on("end", () => {
-          console.log("Anthropic response:", data.substring(0, 200));
+          console.log("Anthropic response:", data.substring(0, 300));
           resolve(data);
         });
       });
-      req.on("error", (e) => {
-        console.error("Request error:", e.message);
-        reject(e);
-      });
+      req.on("error", reject);
       req.write(payload);
       req.end();
     });
@@ -67,10 +61,7 @@ Respond ONLY with valid JSON, no markdown:
       body: result
     };
   } catch (err) {
-    console.error("Function error:", err.message);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: { message: err.message } })
-    };
+    console.error("Error:", err.message);
+    return { statusCode: 500, body: JSON.stringify({ error: { message: err.message } }) };
   }
 };
