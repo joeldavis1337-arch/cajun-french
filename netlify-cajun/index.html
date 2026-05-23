@@ -223,29 +223,15 @@ async function translateToCajun(english) {
   const res = await fetch("/.netlify/functions/translate", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1000,
-      system: `You are a Cajun French language expert. Translate English into authentic Louisiana Cajun French — not standard Parisian French.
-
-STRICT RULES:
-- Translate ONLY what the user wrote. Do not add words, endearments, or flavor not in the original phrase.
-- Do NOT add cher, chère, petit, petite or any endearment unless the user's phrase contains one.
-- Use genuine Cajun grammar: drop ne in negatives, use on instead of nous, char for car, etc.
-- Keep translation as close to the original meaning as possible.
-
-Respond ONLY with valid JSON, no markdown:
-{"cajun":"phrase","pronunciation":"CAPS=stress e.g. bohn-ZHOOR","literal":"literal meaning if different","breakdown":[{"cajun":"word","pronunciation":"pron","english":"meaning"}],"note":"1-2 sentences on Cajun grammar/vocab used"}`,
-      messages: [{
-        role: "user",
-        content: `Translate to Cajun French: "${english}"`
-      }]
-    })
+    body: JSON.stringify({ english: english })
   });
   const data = await res.json();
+  if (data.error) throw new Error("API error: " + data.error.message);
   const text = data.content?.find(b => b.type === "text")?.text || "";
+  if (!text) throw new Error("Empty response from API");
   return JSON.parse(text.replace(/```json|```/g, "").trim());
 }
+
 function Section({
   title,
   count,
