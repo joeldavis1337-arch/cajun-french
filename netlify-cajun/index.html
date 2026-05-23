@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <link rel="manifest" href="./manifest.json"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Cajun French"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="theme-color" content="#070D1A"/>
+  <meta name="description" content="Learn Cajun French — vocabulary, sentence structure, and AI-powered translation."/>
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png"/>
+  <link rel="icon" type="image/png" href="./icon-192.png"/>
+  <title>Cajun French</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:ital@0;1&display=swap" rel="stylesheet"/>
+  <style>
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+html { height:100%; }
+body { background:#070D1A; color:#F5F2EB; font-family:'Source Serif 4',serif; height:100%; overflow:hidden; padding-top:env(safe-area-inset-top); padding-bottom:env(safe-area-inset-bottom); }
+#root { height:100%; display:flex; flex-direction:column; }
+.shell { display:flex; flex-direction:column; height:100%; overflow:hidden; }
+.header { flex-shrink:0; padding:18px 20px 14px; background:#0D1627; border-bottom:1px solid #1E3058; display:flex; align-items:center; gap:12px; }
+.header-text { flex:1; }
+.logo { font-family:'Playfair Display',serif; font-size:1.6rem; color:#C49A3C; line-height:1; }
+.logo span { color:#F0E8D0; }
+.tagline { font-style:italic; font-weight:300; color:#7B8EAA; font-size:.78rem; margin-top:2px; }
+.tabs { flex-shrink:0; display:flex; background:#0D1627; border-bottom:2px solid #1E3058; }
+.tab { flex:1; padding:10px 8px 8px; background:none; border:none; cursor:pointer; font-family:'Source Serif 4',serif; font-size:.9rem; color:#7B8EAA; border-bottom:3px solid transparent; margin-bottom:-2px; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:7px; }
+.tab.active { color:#C49A3C; border-bottom-color:#C49A3C; }
+.tab:hover:not(.active) { color:#F0E8D0; }
+.content { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-bottom:20px; }
+.learn { padding:16px; }
+.tip { background:#0D1627; border:1px solid #1E3058; border-left:3px solid #C49A3C; border-radius:4px; padding:11px 14px; margin-bottom:14px; font-size:.82rem; color:#7B8EAA; line-height:1.6; }
+.tip strong { color:#F0E8D0; display:block; margin-bottom:2px; font-size:.85rem; }
+.section-card { background:#0D1627; border:1px solid #1E3058; border-radius:6px; margin-bottom:12px; overflow:hidden; }
+.section-header { display:flex; justify-content:space-between; align-items:center; padding:13px 16px; cursor:pointer; border-left:4px solid #C49A3C; transition:background .15s; user-select:none; }
+.section-header:active { background:#111E35; }
+.section-title { font-family:'Playfair Display',serif; font-size:1rem; color:#F0E8D0; }
+.section-meta { display:flex; align-items:center; gap:8px; }
+.section-count { font-size:.72rem; color:#7B8EAA; font-family:'DM Mono',monospace; }
+.chevron { color:#C49A3C; font-size:.75rem; transition:transform .2s; }
+.chevron.open { transform:rotate(180deg); }
+.table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+table { width:100%; border-collapse:collapse; min-width:420px; }
+thead th { background:#1A3266; color:#F0E8D0; text-align:left; padding:8px 12px; font-family:'DM Mono',monospace; font-size:.7rem; font-weight:400; letter-spacing:.08em; }
+tbody tr:nth-child(odd) { background:#111E35; }
+tbody tr:nth-child(even) { background:#0F1B30; }
+tbody td { padding:9px 12px; font-size:.86rem; vertical-align:top; }
+.td-cajun { color:#F0E8D0; font-weight:600; }
+.td-pron { color:#E8C06A; font-family:'DM Mono',monospace; font-size:.78rem; font-style:italic; }
+.td-meaning { color:#7B8EAA; font-size:.83rem; }
+.formula-grid { display:grid; gap:10px; padding:14px; }
+.formula { background:#111E35; border:1px solid #1E3058; border-left:4px solid #C49A3C; border-radius:4px; padding:12px 14px; }
+.formula-label { font-size:.7rem; color:#7B8EAA; font-family:'DM Mono',monospace; letter-spacing:.1em; text-transform:uppercase; margin-bottom:5px; }
+.formula-code { font-family:'DM Mono',monospace; font-size:.88rem; color:#4D7ACC; margin-bottom:5px; }
+.formula-ex { font-size:.81rem; color:#7B8EAA; font-style:italic; }
+.rules-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:14px; }
+@media(max-width:480px){ .rules-grid { grid-template-columns:1fr; } }
+.rule-card { background:#111E35; border:1px solid #1E3058; border-radius:4px; padding:10px 12px; }
+.rule-label { font-size:.68rem; color:#C49A3C; font-family:'DM Mono',monospace; letter-spacing:.1em; text-transform:uppercase; margin-bottom:5px; }
+.rule-old { color:#7B8EAA; font-size:.82rem; text-decoration:line-through; text-decoration-color:#8B3A3A; margin-bottom:2px; }
+.rule-new { color:#F0E8D0; font-size:.88rem; font-weight:600; }
+.rule-note { color:#7B8EAA; font-size:.74rem; margin-top:3px; font-style:italic; }
+.power-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:14px; }
+@media(max-width:400px){ .power-grid { grid-template-columns:1fr; } }
+.power-card { background:#111E35; border:1px solid #1E3058; border-radius:4px; padding:9px 11px; }
+.power-word { font-family:'Playfair Display',serif; color:#C49A3C; font-size:1rem; }
+.power-pron { font-family:'DM Mono',monospace; font-size:.72rem; color:#7A5E20; font-style:italic; margin:2px 0; }
+.power-meaning { color:#7B8EAA; font-size:.76rem; }
+.power-ex { color:#4D7ACC; font-size:.74rem; font-style:italic; margin-top:3px; }
+.translate { padding:16px; }
+.input-block { background:#0D1627; border:1px solid #1E3058; border-radius:6px; overflow:hidden; margin-bottom:14px; }
+.input-label { display:flex; align-items:center; gap:8px; padding:10px 16px; border-bottom:1px solid #1E3058; background:#111E35; font-family:'DM Mono',monospace; font-size:.7rem; color:#7B8EAA; letter-spacing:.1em; text-transform:uppercase; }
+.dot { width:7px; height:7px; border-radius:50%; background:#E8C06A; flex-shrink:0; }
+textarea { width:100%; background:transparent; border:none; outline:none; color:#F5F2EB; font-family:'Source Serif 4',serif; font-size:1rem; padding:14px 16px; resize:none; line-height:1.6; -webkit-appearance:none; }
+textarea::placeholder { color:#7B8EAA; font-style:italic; }
+.translate-btn { width:100%; padding:13px; background:linear-gradient(135deg,#1A3266,#2450A0); border:none; border-radius:6px; color:#F0E8D0; font-family:'Playfair Display',serif; font-size:1rem; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:9px; -webkit-appearance:none; }
+.translate-btn:active:not(:disabled) { background:linear-gradient(135deg,#2450A0,#C49A3C); transform:scale(.98); }
+.translate-btn:disabled { opacity:.45; cursor:not-allowed; }
+.btn-spinner { width:15px; height:15px; border:2px solid rgba(240,232,208,.3); border-top-color:#F0E8D0; border-radius:50%; animation:spin .7s linear infinite; display:inline-block; vertical-align:middle; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.output { background:#0D1627; border:1px solid #1E3058; border-radius:6px; overflow:hidden; margin-top:14px; animation:fadeUp .25s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+.output-header { padding:10px 16px; background:#1A3266; display:flex; align-items:center; gap:8px; }
+.output-header-title { font-family:'DM Mono',monospace; font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:#E8C06A; }
+.result-main { padding:16px 16px 4px; }
+.result-cajun { font-family:'Playfair Display',serif; font-size:1.5rem; color:#E8C06A; line-height:1.3; margin-bottom:5px; }
+.result-pron { font-family:'DM Mono',monospace; font-size:.9rem; color:#C49A3C; font-style:italic; margin-bottom:10px; }
+.result-section { padding:10px 16px; border-top:1px solid #1E3058; }
+.result-section-label { font-family:'DM Mono',monospace; font-size:.66rem; color:#7B8EAA; letter-spacing:.12em; text-transform:uppercase; margin-bottom:7px; }
+.chips { display:flex; flex-wrap:wrap; gap:7px; }
+.word-chip { background:#111E35; border:1px solid #1E3058; border-radius:3px; padding:5px 9px; }
+.word-cajun { font-size:.88rem; color:#F0E8D0; font-weight:600; }
+.word-pron { font-family:'DM Mono',monospace; font-size:.72rem; color:#C49A3C; font-style:italic; margin-top:1px; }
+.word-en { font-size:.74rem; color:#7B8EAA; margin-top:1px; }
+.note-text { font-size:.84rem; color:#7B8EAA; font-style:italic; line-height:1.6; }
+.note-text strong { color:#F0E8D0; font-style:normal; }
+.pb { padding-bottom:12px; }
+.error-box { background:#1A0A0A; border:1px solid #8B3A3A; border-radius:6px; padding:12px 16px; color:#CC8080; font-size:.86rem; margin-top:14px; }
+.saved-section { margin-top:20px; }
+.saved-title { font-family:'Playfair Display',serif; color:#C49A3C; font-size:.95rem; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.saved-card { background:#0D1627; border:1px solid #1E3058; border-radius:4px; padding:10px 12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+.saved-en { font-size:.78rem; color:#7B8EAA; margin-bottom:2px; }
+.saved-cajun { font-family:'Source Serif 4',serif; font-size:.9rem; color:#F0E8D0; }
+.saved-pron { font-family:'DM Mono',monospace; font-size:.72rem; color:#C49A3C; font-style:italic; margin-top:2px; }
+.save-btn { background:none; border:1px solid #7A5E20; color:#C49A3C; border-radius:3px; padding:4px 9px; cursor:pointer; font-size:.7rem; font-family:'DM Mono',monospace; white-space:nowrap; }
+.save-btn:active { background:#7A5E20; color:#F0E8D0; }
+.del-btn { background:none; border:none; color:#7B8EAA; cursor:pointer; font-size:.95rem; padding:2px 4px; }
+.del-btn:active { color:#8B3A3A; }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script>
+const {
+  useState
+} = React;
+const VOCAB = [{
+  title: "Greetings & Basic Interaction",
+  rows: [["Comment ça va?", "koh-MAHN sah VAH", "How's it going?"], ["Ça va bien", "sah VAH bee-YEN", "I'm doing well"], ["Bonjour", "bohn-ZHOOR", "Hello"], ["Bonsoir", "bohn-SWAHR", "Good evening"], ["Au revoir", "oh reh-VWAHR", "Goodbye"], ["Merci beaucoup", "mehr-SEE boh-KOO", "Thank you very much"], ["De rien", "deh ree-YEN", "You're welcome"], ["Oui / Ouais", "WEE / WAY", "Yes / Yeah (casual)"], ["S'il te plaît", "seel teh PLAY", "Please (informal)"]]
+}, {
+  title: "Cajun-Specific Words",
+  rows: [["Allons", "ah-LOHN", "Let's go"], ["Cher / Chère", "SHA", "Hon/Dear — term of endearment"], ["Lagniappe", "LAN-yap", "A little something extra"], ["Couillon", "KOO-yohn", "Fool/dummy (affectionate)"], ["C'est bon", "say BOHN", "That's good"], ["C'est tout", "say TOO", "That's all"], ["Fais do-do", "fay doh-DOH", "Dance / party"], ["C'est la vie", "say lah VEE", "That's life"], ["Vieux / Vieille", "VYUH / VYAY", "Old man/woman (affectionate)"]]
+}, {
+  title: "Family — La Famille",
+  rows: [["Maman", "mah-MAHN", "Mom"], ["Papa", "pah-PAH", "Dad"], ["Mémère", "MAY-mehr", "Grandma"], ["Pépère", "PAY-pehr", "Grandpa"], ["Mon frère", "mohn FREHR", "My brother"], ["Ma soeur", "mah SUHR", "My sister"], ["Mon oncle", "mohn OHN-kluh", "My uncle"], ["Ma tante", "mah TAHNT", "My aunt"], ["Les enfants", "lay zahn-FAHN", "The children"]]
+}, {
+  title: "Food & Drink",
+  rows: [["Manger", "mahn-ZHAY", "To eat"], ["Boire", "BWAHR", "To drink"], ["J'ai faim", "zhay FEN", "I'm hungry"], ["J'ai soif", "zhay SWAHF", "I'm thirsty"], ["Du riz", "doo REE", "Rice"], ["Des écrevisses", "day zay-kreh-VEES", "Crawfish"], ["Du boudin", "doo boo-DEN", "Boudin"], ["De la bière", "deh lah bee-EHR", "Beer"]]
+}, {
+  title: "Parent Phrases — Car & Mealtime",
+  rows: [["Allons, vite!", "ah-LOHN VEET", "Let's go, hurry!"], ["Monte dans le char", "mohn-TEH dahn luh SHAR", "Get in the car"], ["Attache ta ceinture", "ah-TASH tah sen-TYOOR", "Buckle your seatbelt"], ["Reste tranquille", "rest trahn-KEEL", "Stay still"], ["Viens manger", "vyen mahn-ZHAY", "Come eat"], ["Mange ton assiette", "mahnzh tohn ah-see-ET", "Eat your plate"], ["Lave tes mains d'abord", "lahv tay MEN dah-BOR", "Wash your hands first"], ["On mange ensemble", "ohn mahnzh ahn-SAHM-bluh", "We eat together"]]
+}, {
+  title: "Parent Phrases — Praise & Bedtime",
+  rows: [["C'est bon, cher!", "say BOHN SHA", "Good job, hon!"], ["T'es smart, toi", "tay SMART twah", "You're smart, you"], ["Je suis fier de toi", "zhuh swee fee-YEH duh TWAH", "I'm proud of you"], ["C'est ça!", "say SAH", "That's it!"], ["Fais de beaux rêves", "fay duh BOH REV", "Have sweet dreams"], ["Je t'aime, cher", "zhuh TEM SHA", "I love you, hon"], ["Bonne nuit", "bohn NWEE", "Good night"], ["Va te coucher", "vah tuh koo-SHAY", "Go to bed"]]
+}];
+const FORMULAS = [{
+  label: "Basic Statement",
+  code: "Subject  →  Verb  →  Object",
+  ex: "Je mange du riz — I eat rice"
+}, {
+  label: "Command (Imperative)",
+  code: "Verb  →  Object",
+  ex: "Mange ton riz — Eat your rice"
+}, {
+  label: "Chained Commands",
+  code: "Command  +  et  +  Command",
+  ex: "Mange ton riz et bois ton lait"
+}, {
+  label: "Question (raise voice)",
+  code: "Statement  + ↗",
+  ex: "T'as faim? — You hungry?"
+}];
+const RULES = [{
+  label: "Drop the ne",
+  old: "Je ne sais pas",
+  new_: "Je sais pas",
+  note: "Cajun drops ne every time"
+}, {
+  label: "Use on not nous",
+  old: "Nous mangeons",
+  new_: "On mange",
+  note: "on = we, always"
+}, {
+  label: "Informal questions",
+  old: "Est-ce que t'as faim?",
+  new_: "T'as faim?",
+  note: "Just raise intonation"
+}, {
+  label: "Cajun for car",
+  old: "la voiture",
+  new_: "le char",
+  note: "char = car in Cajun"
+}];
+const POWER = [{
+  word: "Maintenant",
+  pron: "mahn-tuh-NAHN",
+  meaning: "Now",
+  ex: "Viens ici maintenant"
+}, {
+  word: "Vite",
+  pron: "VEET",
+  meaning: "Quick/Hurry",
+  ex: "Allons, vite!"
+}, {
+  word: "S'il te plaît",
+  pron: "seel teh PLAY",
+  meaning: "Please",
+  ex: "Assis-toi, s'il te plaît"
+}, {
+  word: "Encore",
+  pron: "ahn-KOR",
+  meaning: "Again/More",
+  ex: "Encore du riz?"
+}, {
+  word: "Assez",
+  pron: "ah-SAY",
+  meaning: "Enough",
+  ex: "C'est assez"
+}, {
+  word: "D'abord",
+  pron: "dah-BOR",
+  meaning: "First",
+  ex: "Lave tes mains d'abord"
+}, {
+  word: "Ensemble",
+  pron: "ahn-SAHM-bluh",
+  meaning: "Together",
+  ex: "On mange ensemble"
+}, {
+  word: "Et",
+  pron: "AY",
+  meaning: "And (chains)",
+  ex: "Viens et assis-toi"
+}];
+
+async function translateToCajun(english) {
+  const res = await fetch("/api/translate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1000,
+      system: `You are a Cajun French language expert. Translate English into authentic Louisiana Cajun French — not standard Parisian French.
+
+STRICT RULES:
+- Translate ONLY what the user wrote. Do not add words, endearments, or flavor not in the original phrase.
+- Do NOT add cher, chère, petit, petite or any endearment unless the user's phrase contains one.
+- Use genuine Cajun grammar: drop ne in negatives, use on instead of nous, char for car, etc.
+- Keep translation as close to the original meaning as possible.
+
+Respond ONLY with valid JSON, no markdown:
+{"cajun":"phrase","pronunciation":"CAPS=stress e.g. bohn-ZHOOR","literal":"literal meaning if different","breakdown":[{"cajun":"word","pronunciation":"pron","english":"meaning"}],"note":"1-2 sentences on Cajun grammar/vocab used"}`,
+      messages: [{
+        role: "user",
+        content: `Translate to Cajun French: "${english}"`
+      }]
+    })
+  });
+  const data = await res.json();
+  const text = data.content?.find(b => b.type === "text")?.text || "";
+  return JSON.parse(text.replace(/```json|```/g, "").trim());
+}
+function Section({
+  title,
+  count,
+  children
+}) {
+  const [open, setOpen] = useState(false);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "section-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "section-header",
+    onClick: () => setOpen(o => !o)
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "section-title"
+  }, title), /*#__PURE__*/React.createElement("div", {
+    className: "section-meta"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "section-count"
+  }, count), /*#__PURE__*/React.createElement("span", {
+    className: `chevron ${open ? "open" : ""}`
+  }, "\u25BC"))), open && children);
+}
+function LearnTab() {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "learn"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "tip"
+  }, /*#__PURE__*/React.createElement("strong", null, "Pronunciation Key"), "CAPS = stressed syllable \xA0\u2022\xA0 zh = soft J like measure \xA0\u2022\xA0 ohn = nasal O \xA0\u2022\xA0 SHA = cher/ch\xE8re \xA0\u2022\xA0 Final consonants often softened"), /*#__PURE__*/React.createElement(Section, {
+    title: "Sentence Structure and Formulas",
+    count: "4 patterns"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "formula-grid"
+  }, FORMULAS.map((f, i) => /*#__PURE__*/React.createElement("div", {
+    className: "formula",
+    key: i
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "formula-label"
+  }, f.label), /*#__PURE__*/React.createElement("div", {
+    className: "formula-code"
+  }, f.code), /*#__PURE__*/React.createElement("div", {
+    className: "formula-ex"
+  }, f.ex))))), /*#__PURE__*/React.createElement(Section, {
+    title: "Cajun Shortcuts vs Standard French",
+    count: "4 rules"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "rules-grid"
+  }, RULES.map((r, i) => /*#__PURE__*/React.createElement("div", {
+    className: "rule-card",
+    key: i
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "rule-label"
+  }, r.label), /*#__PURE__*/React.createElement("div", {
+    className: "rule-old"
+  }, r.old), /*#__PURE__*/React.createElement("div", {
+    className: "rule-new"
+  }, r.new_), /*#__PURE__*/React.createElement("div", {
+    className: "rule-note"
+  }, r.note))))), /*#__PURE__*/React.createElement(Section, {
+    title: "Power Words \u2014 Add to Any Command",
+    count: `${POWER.length} words`
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "power-grid"
+  }, POWER.map((p, i) => /*#__PURE__*/React.createElement("div", {
+    className: "power-card",
+    key: i
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "power-word"
+  }, p.word), /*#__PURE__*/React.createElement("div", {
+    className: "power-pron"
+  }, p.pron), /*#__PURE__*/React.createElement("div", {
+    className: "power-meaning"
+  }, p.meaning), /*#__PURE__*/React.createElement("div", {
+    className: "power-ex"
+  }, "e.g. ", p.ex))))), VOCAB.map((sec, i) => /*#__PURE__*/React.createElement(Section, {
+    key: i,
+    title: sec.title,
+    count: `${sec.rows.length} phrases`
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "table-wrap"
+  }, /*#__PURE__*/React.createElement("table", null, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Cajun French"), /*#__PURE__*/React.createElement("th", null, "Pronunciation"), /*#__PURE__*/React.createElement("th", null, "Meaning"))), /*#__PURE__*/React.createElement("tbody", null, sec.rows.map(([c, p, m], j) => /*#__PURE__*/React.createElement("tr", {
+    key: j
+  }, /*#__PURE__*/React.createElement("td", {
+    className: "td-cajun"
+  }, c), /*#__PURE__*/React.createElement("td", {
+    className: "td-pron"
+  }, p), /*#__PURE__*/React.createElement("td", {
+    className: "td-meaning"
+  }, m)))))))));
+}
+function TranslateTab() {
+  const [input, setInput] = useState("");
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [saved, setSaved] = useState([]);
+  const run = async () => {
+    if (!input.trim()) return;
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    try {
+      const data = await translateToCajun(input.trim());
+      setResult({
+        english: input.trim(),
+        ...data
+      });
+    } catch (e) {
+      setError("Translation failed — check your connection and try again.");
+    }
+    setLoading(false);
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "translate"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "tip"
+  }, /*#__PURE__*/React.createElement("strong", null, "How to use"), "Type any English phrase and get authentic Cajun French with full pronunciation and a word-by-word breakdown."), /*#__PURE__*/React.createElement("div", {
+    className: "input-block"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "input-label"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "dot"
+  }), "English phrase"), /*#__PURE__*/React.createElement("textarea", {
+    rows: 3,
+    placeholder: "e.g. Eat your food before you go outside...",
+    value: input,
+    onChange: e => setInput(e.target.value),
+    onKeyDown: e => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        run();
+      }
+    }
+  })), /*#__PURE__*/React.createElement("button", {
+    className: "translate-btn",
+    onClick: run,
+    disabled: loading || !input.trim()
+  }, loading ? /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("span", {
+    className: "btn-spinner"
+  }), " Translating...") : "Translate to Cajun French →"), error && /*#__PURE__*/React.createElement("div", {
+    className: "error-box"
+  }, error), result && /*#__PURE__*/React.createElement("div", {
+    className: "output"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "output-header"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "output-header-title"
+  }, "Cajun French"), /*#__PURE__*/React.createElement("button", {
+    className: "save-btn",
+    style: {
+      marginLeft: "auto"
+    },
+    onClick: () => setSaved(s => [result, ...s])
+  }, "\u2605 Save")), /*#__PURE__*/React.createElement("div", {
+    className: "result-main"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "result-cajun"
+  }, result.cajun), /*#__PURE__*/React.createElement("div", {
+    className: "result-pron"
+  }, result.pronunciation)), result.literal && result.literal !== result.english && /*#__PURE__*/React.createElement("div", {
+    className: "result-section"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "result-section-label"
+  }, "Literal meaning"), /*#__PURE__*/React.createElement("div", {
+    className: "note-text"
+  }, result.literal)), result.breakdown && result.breakdown.length > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "result-section"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "result-section-label"
+  }, "Word by word"), /*#__PURE__*/React.createElement("div", {
+    className: "chips"
+  }, result.breakdown.map((w, i) => /*#__PURE__*/React.createElement("div", {
+    className: "word-chip",
+    key: i
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "word-cajun"
+  }, w.cajun), /*#__PURE__*/React.createElement("div", {
+    className: "word-pron"
+  }, w.pronunciation), /*#__PURE__*/React.createElement("div", {
+    className: "word-en"
+  }, w.english))))), result.note && /*#__PURE__*/React.createElement("div", {
+    className: "result-section pb"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "result-section-label"
+  }, "Cajun note"), /*#__PURE__*/React.createElement("div", {
+    className: "note-text"
+  }, result.note))), saved.length > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "saved-section"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "saved-title"
+  }, "\u2605 Saved Phrases ", /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "#7B8EAA",
+      fontFamily: "monospace",
+      fontSize: ".78rem"
+    }
+  }, "(", saved.length, ")")), saved.map((s, i) => /*#__PURE__*/React.createElement("div", {
+    className: "saved-card",
+    key: i
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "saved-en"
+  }, s.english), /*#__PURE__*/React.createElement("div", {
+    className: "saved-cajun"
+  }, s.cajun), /*#__PURE__*/React.createElement("div", {
+    className: "saved-pron"
+  }, s.pronunciation)), /*#__PURE__*/React.createElement("button", {
+    className: "del-btn",
+    onClick: () => setSaved(sv => sv.filter((_, j) => j !== i))
+  }, "\u2715")))));
+}
+function App() {
+  const [tab, setTab] = useState("learn");
+  return /*#__PURE__*/React.createElement("div", {
+    className: "shell"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "header"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: "./apple-touch-icon.png",
+    style: {
+      width: "38px",
+      height: "38px",
+      borderRadius: "8px",
+      flexShrink: 0
+    },
+    alt: "fleur-de-lis"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "header-text"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "logo"
+  }, "Cajun ", /*#__PURE__*/React.createElement("span", null, "French")), /*#__PURE__*/React.createElement("div", {
+    className: "tagline"
+  }, "parlez comme chez vous"))), /*#__PURE__*/React.createElement("div", {
+    className: "tabs"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: `tab ${tab === "learn" ? "active" : ""}`,
+    onClick: () => setTab("learn")
+  }, "\uD83D\uDCD6 Learn"), /*#__PURE__*/React.createElement("button", {
+    className: `tab ${tab === "translate" ? "active" : ""}`,
+    onClick: () => setTab("translate")
+  }, "\uD83D\uDD04 Translate")), /*#__PURE__*/React.createElement("div", {
+    className: "content"
+  }, tab === "learn" && /*#__PURE__*/React.createElement(LearnTab, null), tab === "translate" && /*#__PURE__*/React.createElement(TranslateTab, null)));
+}
+ReactDOM.createRoot(document.getElementById("root")).render(/*#__PURE__*/React.createElement(App, null));
+
+  </script>
+</body>
+</html>
