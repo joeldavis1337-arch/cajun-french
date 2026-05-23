@@ -232,6 +232,42 @@ async function translateToCajun(english) {
   return JSON.parse(text.replace(/```json|```/g, "").trim());
 }
 
+
+function SpeakBtn({text, small}) {
+  const [speaking, setSpeaking] = React.useState(false);
+  const handleSpeak = (e) => {
+    e.stopPropagation();
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text);
+    const voices = window.speechSynthesis.getVoices();
+    const frVoice = voices.find(v => v.lang && v.lang.startsWith("fr"));
+    if (frVoice) utt.voice = frVoice;
+    utt.lang = "fr-FR";
+    utt.rate = 0.85;
+    setSpeaking(true);
+    utt.onend = () => setSpeaking(false);
+    utt.onerror = () => setSpeaking(false);
+    window.speechSynthesis.speak(utt);
+  };
+  const size = small ? "22px" : "32px";
+  return /*#__PURE__*/React.createElement("button", {
+    onClick: handleSpeak,
+    title: "Listen",
+    style: {
+      background: "none",
+      border: "1px solid " + (speaking ? "#C49A3C" : "#1E3058"),
+      borderRadius: "50%",
+      width: size, height: size,
+      display: "inline-flex", alignItems: "center", justifyContent: "center",
+      cursor: "pointer", color: speaking ? "#C49A3C" : "#7B8EAA",
+      fontSize: small ? ".65rem" : ".8rem",
+      flexShrink: 0, transition: "all .2s", padding: 0,
+      verticalAlign: "middle"
+    }
+  }, speaking ? "▶" : "🔊");
+}
+
 function Section({
   title,
   count,
@@ -313,8 +349,9 @@ function LearnTab() {
   }, /*#__PURE__*/React.createElement("table", null, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Cajun French"), /*#__PURE__*/React.createElement("th", null, "Pronunciation"), /*#__PURE__*/React.createElement("th", null, "Meaning"))), /*#__PURE__*/React.createElement("tbody", null, sec.rows.map(([c, p, m], j) => /*#__PURE__*/React.createElement("tr", {
     key: j
   }, /*#__PURE__*/React.createElement("td", {
-    className: "td-cajun"
-  }, c), /*#__PURE__*/React.createElement("td", {
+    className: "td-cajun",
+    style: {display:"flex", alignItems:"center", gap:"6px"}
+  }, /*#__PURE__*/React.createElement("span", null, c), /*#__PURE__*/React.createElement(SpeakBtn, {text: c, small: true})), /*#__PURE__*/React.createElement("td", {
     className: "td-pron"
   }, p), /*#__PURE__*/React.createElement("td", {
     className: "td-meaning"
@@ -386,8 +423,10 @@ function TranslateTab() {
   }, "\u2605 Save")), /*#__PURE__*/React.createElement("div", {
     className: "result-main"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "result-cajun"
-  }, result.cajun), /*#__PURE__*/React.createElement("div", {
+    className: "result-cajun",
+    style: {display:"flex", alignItems:"center", gap:"10px"}
+  }, /*#__PURE__*/React.createElement("span", null, result.cajun),
+     /*#__PURE__*/React.createElement(SpeakBtn, {text: result.cajun})), /*#__PURE__*/React.createElement("div", {
     className: "result-pron"
   }, result.pronunciation)), result.literal && result.literal !== result.english && /*#__PURE__*/React.createElement("div", {
     className: "result-section"
